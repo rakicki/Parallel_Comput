@@ -1,0 +1,114 @@
+Premiers pas vers l'utilisation de git et GitHub.
+
+
+/*********************************************************************************************************/
+Some useful commands:
+
+To add all the changes made to the current branch:
+git add .
+
+To commit the changes to the branch:
+git commit -m 'description of the commit'
+
+To check the history of the different commits:
+git log
+
+To check out the different existing branches:
+git branch
+
+To return to a previous state/branch:
+git checkout "ash code"
+where "ash code" is the code that can be retrieved from the list displayed after the command git branch.
+
+To check out different information on the git and GitHub setups on the local machine:
+git config --list
+
+To check out the different ssh key on the local machine:
+ls -al ~/.ssh
+
+To copy some stuff about a given ssh key present on the local machine:
+clip.exe < ~/.ssh/id_ed25519.pub
+
+/*********************************************************************************************************/
+About the HPC project and the linkage to GitHub:
+
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ mkdir HPC
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ cd HPC
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint:   git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint:   git branch -m <name>
+Initialized empty Git repository in /home/superaph/HPC/.git/
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git branch -M main
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ cp -r ../Projet_1Partie_1/ Projet1Partie1
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git add .
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git commit -m 'Added the first part of the first project.'
+[main (root-commit) eb8af5b] Added the first part of the first project.
+ 17 files changed, 8052073 insertions(+)
+ create mode 100644 Projet1Partie1/Gauss_Seidel.cpp
+ create mode 100644 Projet1Partie1/Gauss_Sidel_err.dat
+ create mode 100644 Projet1Partie1/Gauss_Sidel_errL2.dat
+ create mode 100644 Projet1Partie1/Jacobi.cpp
+ create mode 100644 Projet1Partie1/Jacobi_err.cpp
+ create mode 100644 Projet1Partie1/Jacobi_mpi.cpp
+ create mode 100644 Projet1Partie1/Jacobi_mpi_sol_manu.cpp
+ create mode 100755 Projet1Partie1/a.out
+ create mode 100644 Projet1Partie1/errJacobi_mpi.dat
+ create mode 100644 Projet1Partie1/sol_Gauss_Sidel.csv
+ create mode 100644 Projet1Partie1/sol_Jacobi.csv
+ create mode 100644 Projet1Partie1/sol_rank0.csv
+ create mode 100644 Projet1Partie1/sol_rank1.csv
+ create mode 100644 Projet1Partie1/sol_rank2.csv
+ create mode 100644 Projet1Partie1/sol_rank3.csv
+ create mode 100644 Projet1Partie1/solution_globalci.csv
+ create mode 100644 Projet1Partie1/visu.ipynb
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git remote set-url origin git@github.com:Superaph/HPC.git
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git pull origin main
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (3/3), 945 bytes | 118.00 KiB/s, done.
+From github.com:Superaph/HPC
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> origin/main
+hint: You have divergent branches and need to specify how to reconcile them.
+hint: You can do so by running one of the following commands sometime before
+hint: your next pull:
+hint:
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint:
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+fatal: Need to specify how to reconcile divergent branches.
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git config pull.rebase true
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git fetch origin
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git rebase origin/main
+Successfully rebased and updated refs/heads/main.
+(base) superaph@LAPTOP-6EQII9E8:~/HPC$ git push origin main
+Enumerating objects: 21, done.
+Counting objects: 100% (21/21), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (20/20), done.
+Writing objects: 100% (20/20), 51.96 MiB | 4.86 MiB/s, done.
+Total 20 (delta 4), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (4/4), done.
+remote: warning: See https://gh.io/lfs for more information.
+remote: warning: File Projet1Partie1/sol_rank0.csv is 58.37 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+remote: warning: File Projet1Partie1/sol_rank1.csv is 57.68 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+remote: warning: File Projet1Partie1/sol_rank2.csv is 57.68 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+remote: warning: File Projet1Partie1/sol_rank3.csv is 57.50 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+To github.com:Superaph/HPC.git
+   a795746..4f70f77  main -> main
