@@ -71,5 +71,56 @@ private:
 
 
 
+class AdditiveSchwarz
+{
+public:
+    using ItemType = std::pair<InvCooMatrix<double>, CooMatrix<double>>;
+
+    AdditiveSchwarz(const CooMatrix<double>& A,
+                    const std::vector<CooMatrix<double>>& Rlist)
+    {
+        InvAxR.reserve(Rlist.size());
+
+        for (const CooMatrix<double>& Rj : Rlist)
+        {
+            // Compute Aj = Rj^T * A * Rj   using your matrix ops
+           CooMatrix<double> RtA = Rj.T()*A;   // OK (nloc × N)(N × N)
+          CooMatrix<double> Aj  = RtA *Rj;     // OK (nloc × N)(N × nloc)
+            InvCooMatrix<double> InvAj(Aj);
+
+            // Factorize Aj
+            InvCooMatrix<double> InvAj(Aj);
+
+            // Store (InvAj, Rj)
+            InvAxR.emplace_back(std::move(InvAj), Rj);
+        }
+    }
+
+    // ASM application
+    std::vector<double> operator*(const std::vector<double>& u) const
+    {
+        std::vector<double> y(u.size(), 0.0);
+
+        for (const auto& [InvAj, Rj] : InvAxR)
+        {
+            // r = Rj^T u
+            std::vector<double> r = Rj.T()(u);
+
+            // z = Aj^{-1} r
+            std::vector<double> z = InvAj(r);
+
+            // y += Rj z
+            auto Rjz = Rj(z);
+            for (std::size_t i = 0; i < y.size(); ++i) y[i] += Rjz[i];
+        }
+
+        return y;
+    }
+
+private:
+    std::vector<ItemType> InvAxR;
+};
+
+
 
 #endif
