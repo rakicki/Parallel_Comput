@@ -70,7 +70,7 @@ private:
 
 
 
-
+/*
 class AdditiveSchwarz
 {
 public:
@@ -83,11 +83,10 @@ public:
 
         for (const CooMatrix<double>& Rj : Rlist)
         {
-            // Compute Aj = Rj^T * A * Rj   using your matrix ops
-           CooMatrix<double> RtA = Rj.T()*A;   // OK (nloc × N)(N × N)
-          CooMatrix<double> Aj  = RtA *Rj;     // OK (nloc × N)(N × nloc)
-            InvCooMatrix<double> InvAj(Aj);
+            CooMatrix<double> Aj = (Rj.T()*A) *Rj;
 
+            // important for InvCooMatrix: ensure merged duplicates
+            Aj.sort();
             // Factorize Aj
             InvCooMatrix<double> InvAj(Aj);
 
@@ -120,7 +119,41 @@ public:
 private:
     std::vector<ItemType> InvAxR;
 };
+*/
+class AdditiveSchwarz
+{
+public:
+    using ItemType = std::pair<InvCooMatrix<double>, CooMatrix<double>>;
+    AdditiveSchwarz(const CooMatrix<double>& A,
+                    const std::vector<CooMatrix<double>>& Rlist)
+    {
+        InvAxR.reserve(Rlist.size());
+        for (const auto& Rj : Rlist)
+        {
+            CooMatrix<double> Aj = (Rj.T() * A) * Rj;
+            Aj.sort();
+            InvCooMatrix<double> InvAj(Aj);
+            InvAxR.emplace_back(std::move(InvAj), Rj);
+        }
+    }
 
+    std::vector<double> operator*(const std::vector<double>& u) const
+    {
+        std::vector<double> y(u.size(), 0.0);
+        for (const auto& [InvAj, Rj] : InvAxR)
+        {
+            std::vector<double> r = Rj.T(u);
+            std::vector<double> z = InvAj(r);
+            // y += Rj z
+            std::vector<double> add = Rj(z);
+            for (std::size_t i = 0; i < y.size(); ++i)
+                y[i] += add[i];
+        }
 
+        return y;
+    }
+private:
+    std::vector<ItemType> InvAxR;
+};
 
 #endif

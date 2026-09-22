@@ -17,6 +17,13 @@ in the directory "example". To compile/execute this example:
 The example code should produce two output files named "output.mesh"
 and "output.sol". You can vizualize them with vizir4.
 
+# Organisation du Code
+Les fichiers tpX-exoY sont chacun dans le répértoire tp/tpX/exoY 
+Le code de l'exo 2 du TP3 est dans le fichier preconditioner.hpp et le code de l'exo3 TP1 dans le fichier iterativesolver.hpp
+J'ai des doublons de fichiers .zone.identifier provenants de la  copie du projet ddm dans ma machine distante.
+# Code visualisation
+ Pour visulaliser les courbes j'ai utilisé un Jupiter Notebook  visu_projet2.ipynb python qui lit les fichiers .dat 
+
 ## Author
 [Xavier Claeys](https://claeys.pages.math.cnrs.fr/)
 

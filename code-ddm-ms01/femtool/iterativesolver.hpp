@@ -139,4 +139,77 @@ std::vector<double> PCGSolver(const CooMatrix<double>&   A,
   return x;
   }
 
+std::vector<double> PCG_ASM_Solver(const CooMatrix<double>&   A,
+	const std::vector<double>& b,const AdditiveSchwarz& P) {
+    
+  assert((NbCol(A)==NbRow(A)) &&
+   (b.size()==NbCol(A)) );
+ 
+  auto    x   = std::vector<double>(b.size(),0.);
+  auto    r   = b-A*x;
+  auto    z   = P*r;
+  auto    p   = z;
+  auto   Ap   = A*p;    
+  double rz   = (r|z);
+
+if (rz <= 0) {
+    std::cout << "rz <= 0 -> preconditioner not SPD (ASM invalid)\n";
+    
+}
+  double eps2 = (1e-8)*rz;
+  double eps=1e-10;
+  eps2       *= std::abs((b|b));      
+  double alpha,beta,pAp;
+
+  Mesh2D Omega;
+
+  // Loading a 2D mesh
+  Read(Omega,"exo2h0.05.mesh");
+
+  // Assembly of a finite element space over Omega
+  auto Vh   = FeSpace(Omega);
+
+ 
+  
+  // Function x = (x1,x2) -> cos(omega*x1)
+auto F    = [](const R3& x){return std::cos(10.*M_PI*x[0]);};
+
+  // Manufactured "exact solution" obtained
+  // by nodal evaluation of f at the degrees of freedom of Vh
+  auto ue   = Vh(F);
+  auto err  = ue-x;
+  double res=(Norm(r)/Norm(b));
+  double norm_err = sqrt(( (A(err)|err))/((A(ue)|ue)));
+  std::size_t niter = 0;   
+   std::ofstream file("TP3_exo3_h0.05.dat"); 
+  while( res>eps && niter++<2000 ){
+
+    Ap    = A*p;
+    pAp   = std::real((Ap|p));    
+    alpha = rz/pAp;
+    x    += alpha*p;
+    r    -= alpha*Ap;    
+    z     = P*r;
+    double rz_new  = (r|z);
+    beta  = rz_new/rz;
+    p     = beta*p+z;
+    rz    = rz_new;
+   
+     err   = ue - x;
+     
+    norm_err = sqrt(( (A(err)|err))/((A(ue)|ue)));
+    file << niter << "; " << norm_err  << "\n";
+     res = (Norm(r)/Norm(b));
+    if((niter%50)==0){
+      std::cout << std::left << std::setw(7) << niter << "\t";
+      std::cout << res << std::endl;
+     
+   }
+      
+  }
+  std::cout << "ASM converged in " << niter << " iterations." << std::endl;
+  file.close();
+  return x;
+  }
+
 #endif
